@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-evolt-orange: oklch(72% 0.18 50);
+  --color-evolt-bg: oklch(15% 0.02 270);
+  --color-evolt-surface: oklch(20% 0.02 270);
+  --color-evolt-text: oklch(98% 0 0);
+  --color-evolt-muted: oklch(65% 0.01 270);
+  --spacing-touch: 2.75rem;
+}
+
+@utility tap-target {
+  min-width: var(--spacing-touch);
+  min-height: var(--spacing-touch);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--color-evolt-bg);
+  color: var(--color-evolt-text);
+}
+
+body {
+  background: var(--color-evolt-bg);
+  color: var(--color-evolt-text);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  min-height: 100dvh;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (hover: hover) {
+  /* Hover styles only on devices with a real pointer (MOB-04). Components add their hover here via Tailwind hover: variants — but only when this guard applies. */
+}

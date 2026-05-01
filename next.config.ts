@@ -9,9 +9,7 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  experimental: {
-    typedRoutes: false,
-  },
+  turbopack: {},
 };
 
 export default withSerwist(nextConfig);
