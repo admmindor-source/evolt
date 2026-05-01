@@ -1,0 +1,51 @@
+{
+  "name": "evolt-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint || true",
+    "test:unit": "vitest run --reporter=dot",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --project=mobile-chromium --grep=@smoke",
+    "test": "npm run test:unit && npm run test:e2e",
+    "lint:hover-rules": "node scripts/check-hover-rules.mjs",
+    "lint:pii": "node scripts/check-pii-logs.mjs",
+    "lint:forbidden-terms": "node scripts/check-forbidden-terms.mjs",
+    "lint:all": "npm run lint && npm run lint:hover-rules && npm run lint:pii && npm run lint:forbidden-terms",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset --linked"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@serwist/next": "9.5.10",
+    "@supabase/ssr": "0.10.2",
+    "@supabase/supabase-js": "2.105.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.14.0",
+    "next": "16.2.4",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "react-hook-form": "^7.74.0",
+    "tailwind-merge": "^3.5.0",
+    "zod": "4.4.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@tailwindcss/postcss": "4.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.1",
+    "jsdom": "^29.1.1",
+    "serwist": "^9.5.10",
+    "supabase": "^2.98.0",
+    "tailwindcss": "4.2.4",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
+  }
+}

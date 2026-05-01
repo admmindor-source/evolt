@@ -2,7 +2,13 @@
 node_modules/
 .env
 .env.local
-.env.*.local
+.env*.local
 .next/
 dist/
 build/
+.vercel
+playwright-report/
+test-results/
+coverage/
+supabase/.branches
+supabase/.temp
