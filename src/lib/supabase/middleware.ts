@@ -47,5 +47,38 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Phase 2: onboarding_completed check
+  // Only runs for authenticated users on onboarding-relevant routes.
+  if (user) {
+    const needsOnboardingCheck =
+      pathname.startsWith('/home') ||
+      pathname.startsWith('/perfil') ||
+      pathname.startsWith('/onboarding');
+
+    if (needsOnboardingCheck) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('onboarding_completed')
+        .eq('user_id', user.id)
+        .single();
+
+      const completed = profile?.onboarding_completed ?? false;
+
+      // auth+no-onboarding trying to access /home or /perfil → redirect to onboarding
+      if (!completed && !pathname.startsWith('/onboarding')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/onboarding/1';
+        return NextResponse.redirect(url);
+      }
+
+      // auth+completed trying to access /onboarding/* → redirect to /home
+      if (completed && pathname.startsWith('/onboarding')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/home';
+        return NextResponse.redirect(url);
+      }
+    }
+  }
+
   return supabaseResponse;
 }
