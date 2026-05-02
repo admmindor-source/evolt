@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Step3Schema } from '@/lib/onboarding/schemas';
 import { classifyProfile } from '@/lib/onboarding/classify-profile';
 import { getInitialRecommendations } from '@/lib/onboarding/initial-recs';
+import { emitEvent } from '@/lib/analytics/emit';
 
 export type Step3State =
   | { ok: true }
@@ -71,6 +72,8 @@ export async function step3Action(
       .from('user_initial_recs')
       .upsert({ user_id: user.id, recs });
   }
+
+  void emitEvent(user.id, 'onboarding_completed', { profile_type: profileType });
 
   redirect('/onboarding/conclusao');
 }

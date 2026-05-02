@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { parseToken } from '@/lib/qr/parse';
 import { setPendingActivation } from '@/lib/qr/pending';
 import { createClient } from '@/lib/supabase/server';
+import { emitEvent } from '@/lib/analytics/emit';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,13 @@ export async function GET(
 
   if (error || !data) {
     return NextResponse.redirect(new URL('/ativar?error=not-found', request.url));
+  }
+
+  // Emit qr_scanned event (user may not be logged in yet — no user_id available;
+  // we emit anonymously with user_id derived later via materializeActivation)
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    void emitEvent(user.id, 'qr_scanned', { sku: token.sku, campaign: token.campaign });
   }
 
   // Set cookie and redirect to signup

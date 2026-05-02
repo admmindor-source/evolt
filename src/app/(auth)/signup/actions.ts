@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { SignupSchema } from '@/lib/validation/signup';
 import { materializeActivation } from '@/lib/activation/materialize';
+import { emitEvent } from '@/lib/analytics/emit';
 
 export type SignupState =
   | { ok: true }
@@ -47,6 +48,7 @@ export async function signupAction(
   // If email confirmations are ON, data.user may be null until user confirms.
   if (data.user) {
     await materializeActivation(data.user.id);
+    void emitEvent(data.user.id, 'signup_completed', { email_confirmed: !error });
   }
 
   redirect('/onboarding/1');

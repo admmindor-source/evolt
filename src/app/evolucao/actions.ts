@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+import { emitEvent } from '@/lib/analytics/emit';
 
 const LogWeightSchema = z.object({
   weight_kg: z.coerce.number().min(30).max(400),
@@ -40,6 +41,7 @@ export async function logWeightAction(
     return { ok: false, errors: { _form: ['Erro ao salvar. Tente novamente.'] } };
   }
 
+  void emitEvent(user.id, 'progress_logged', { type: 'weight', weight_kg: parsed.data.weight_kg });
   revalidatePath('/evolucao');
   revalidatePath('/home');
   return { ok: true };

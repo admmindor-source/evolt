@@ -413,6 +413,30 @@ export type Database = {
           },
         ]
       }
+      engagement_events: {
+        Row: {
+          id: string
+          user_id: string | null
+          event_type: string
+          payload: import('./database').Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          event_type: string
+          payload?: import('./database').Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          event_type?: string
+          payload?: import('./database').Json | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       weight_logs: {
         Row: {
           id: string

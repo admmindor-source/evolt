@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { env } from '@/lib/validation/env';
 
-const PROTECTED_PATHS = ['/onboarding', '/home', '/perfil', '/evolucao', '/loja'];
+const PROTECTED_PATHS = ['/onboarding', '/home', '/perfil', '/evolucao', '/loja', '/admin'];
 const AUTH_PATHS = ['/login', '/signup'];
 
 export async function updateSession(request: NextRequest) {

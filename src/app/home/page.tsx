@@ -6,6 +6,7 @@ import { BottomNav } from '@/components/nav/BottomNav';
 import { ChecklistItem } from './checklist';
 import { getDailyBlocks, getDayNumber } from '@/lib/routine/templates';
 import { generateRecommendations } from '@/lib/recommendations/engine';
+import { emitEvent } from '@/lib/analytics/emit';
 import type { ProfileType } from '@/lib/onboarding/classify-profile';
 
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,9 @@ export default async function HomePage() {
   const blocks = getDailyBlocks(profileType);
   const completedCategories = new Set((completions ?? []).map((c) => c.category));
   const dayNumber = activation?.activated_at ? getDayNumber(activation.activated_at) : 1;
+
+  // Emit home_viewed event (fire-and-forget — non-blocking)
+  void emitEvent(user.id, 'home_viewed', { day: dayNumber });
 
   // Real recommendations from engine
   const recs = generateRecommendations({
