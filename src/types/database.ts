@@ -413,6 +413,84 @@ export type Database = {
           },
         ]
       }
+      weight_logs: {
+        Row: {
+          id: string
+          user_id: string
+          weight_kg: number
+          measured_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          weight_kg: number
+          measured_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          weight_kg?: number
+          measured_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      progress_photos: {
+        Row: {
+          id: string
+          user_id: string
+          storage_path: string
+          photo_type: string
+          taken_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          storage_path: string
+          photo_type?: string
+          taken_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          storage_path?: string
+          photo_type?: string
+          taken_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      recommendation_events: {
+        Row: {
+          id: string
+          user_id: string
+          sku: string
+          event_type: string
+          context: import('./database').Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          sku: string
+          event_type: string
+          context?: import('./database').Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          sku?: string
+          event_type?: string
+          context?: import('./database').Json | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       checklist_completions: {
         Row: {
           id: string
