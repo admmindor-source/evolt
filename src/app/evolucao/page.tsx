@@ -3,8 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 import { BottomNav } from '@/components/nav/BottomNav';
 import { WeightForm } from './weight-form';
 import { PhotoUpload } from './photo-upload';
+import { MeasurementsForm } from './measurements-form';
 
 export const dynamic = 'force-dynamic';
+
+type Tab = 'peso' | 'medidas' | 'fotos';
 
 function trendArrow(logs: Array<{ weight_kg: number }>): { arrow: string; color: string } {
   if (logs.length < 2) return { arrow: '', color: '' };
@@ -46,7 +49,6 @@ function WeightChart({ logs }: { logs: Array<{ weight_kg: number; measured_at: s
       </defs>
       <path d={areaD} fill="url(#chartGrad)" />
       <path d={pathD} fill="none" stroke="var(--color-evolt-orange)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Last point dot */}
       {points.length > 0 && (
         <circle
           cx={points[points.length - 1].split(',')[0]}
@@ -59,13 +61,42 @@ function WeightChart({ logs }: { logs: Array<{ weight_kg: number; measured_at: s
   );
 }
 
+type Measurement = {
+  id: string;
+  measured_at: string;
+  cintura_cm: number | null;
+  quadril_cm: number | null;
+  peito_cm: number | null;
+  braco_cm: number | null;
+};
+
+function MeasurementRow({ label, current, previous }: { label: string; current: number | null; previous: number | null }) {
+  if (current === null) return null;
+  const diff = previous !== null ? current - previous : null;
+  const diffColor = diff === null ? '' : diff < 0 ? '#4ade80' : diff > 0 ? '#f87171' : 'var(--color-evolt-muted)';
+  return (
+    <div className="flex justify-between items-center py-2 text-sm" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <span style={{ color: 'var(--color-evolt-muted)' }}>{label}</span>
+      <div className="flex items-center gap-2">
+        {diff !== null && (
+          <span className="text-xs font-medium" style={{ color: diffColor }}>
+            {diff > 0 ? '+' : ''}{diff.toFixed(1)} cm
+          </span>
+        )}
+        <span className="font-semibold text-white">{Number(current).toFixed(1)} cm</span>
+      </div>
+    </div>
+  );
+}
+
 export default async function EvolucaoPage({
   searchParams,
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
   const params = await searchParams;
-  const tab = params.tab === 'fotos' ? 'fotos' : 'peso';
+  const rawTab = params.tab;
+  const tab: Tab = rawTab === 'medidas' ? 'medidas' : rawTab === 'fotos' ? 'fotos' : 'peso';
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -79,7 +110,7 @@ export default async function EvolucaoPage({
 
   if (!profile?.onboarding_completed) redirect('/onboarding/1');
 
-  const [{ data: weightLogs }, { data: photos }] = await Promise.all([
+  const [{ data: weightLogs }, { data: photos }, { data: measurements }] = await Promise.all([
     supabase
       .from('weight_logs')
       .select('id, weight_kg, measured_at')
@@ -91,6 +122,12 @@ export default async function EvolucaoPage({
       .select('id, storage_path, taken_at')
       .eq('user_id', user.id)
       .order('taken_at', { ascending: false })
+      .limit(20),
+    supabase
+      .from('body_measurements')
+      .select('id, measured_at, cintura_cm, quadril_cm, peito_cm, braco_cm')
+      .eq('user_id', user.id)
+      .order('measured_at', { ascending: false })
       .limit(20),
   ]);
 
@@ -110,6 +147,7 @@ export default async function EvolucaoPage({
 
   const logs = weightLogs ?? [];
   const allPhotos = photos ?? [];
+  const allMeasurements = (measurements ?? []) as Measurement[];
   const trend = trendArrow(logs);
   const currentWeight = logs[0] ? Number(logs[0].weight_kg) : null;
   const firstWeight = logs[logs.length - 1] ? Number(logs[logs.length - 1].weight_kg) : null;
@@ -118,6 +156,9 @@ export default async function EvolucaoPage({
   const firstPhoto = allPhotos[allPhotos.length - 1];
   const lastPhoto = allPhotos[0];
   const hasBeforeAfter = allPhotos.length >= 2 && firstPhoto !== lastPhoto;
+
+  const latestM = allMeasurements[0];
+  const previousM = allMeasurements[1];
 
   return (
     <div className="flex flex-col min-h-dvh pb-24">
@@ -130,10 +171,10 @@ export default async function EvolucaoPage({
 
         {/* Tabs */}
         <div className="flex px-4 gap-1 mb-4">
-          {(['peso', 'fotos'] as const).map((t) => (
+          {(['peso', 'medidas', 'fotos'] as const).map((t) => (
             <a
               key={t}
-              href={t === 'peso' ? '/evolucao' : '/evolucao?tab=fotos'}
+              href={t === 'peso' ? '/evolucao' : `/evolucao?tab=${t}`}
               className="flex-1 text-center py-2 rounded-xl text-sm font-semibold transition-colors"
               style={
                 tab === t
@@ -141,14 +182,13 @@ export default async function EvolucaoPage({
                   : { background: 'var(--color-evolt-surface)', color: 'var(--color-evolt-muted)' }
               }
             >
-              {t === 'peso' ? 'Peso' : 'Fotos'}
+              {t === 'peso' ? 'Peso' : t === 'medidas' ? 'Medidas' : 'Fotos'}
             </a>
           ))}
         </div>
 
         {tab === 'peso' && (
           <div className="flex flex-col gap-4 px-4">
-            {/* Current weight card */}
             {currentWeight !== null && (
               <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
                 <p className="text-xs mb-1" style={{ color: 'var(--color-evolt-muted)' }}>Peso atual</p>
@@ -168,13 +208,11 @@ export default async function EvolucaoPage({
               </div>
             )}
 
-            {/* Register weight */}
             <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
               <p className="text-xs font-semibold mb-3" style={{ color: 'var(--color-evolt-muted)' }}>Registrar peso</p>
               <WeightForm />
             </div>
 
-            {/* History */}
             {logs.length > 0 && (
               <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-evolt-surface)' }}>
                 <p className="text-xs font-semibold px-4 pt-4 pb-2" style={{ color: 'var(--color-evolt-muted)' }}>Histórico</p>
@@ -203,9 +241,59 @@ export default async function EvolucaoPage({
           </div>
         )}
 
+        {tab === 'medidas' && (
+          <div className="flex flex-col gap-4 px-4">
+            {latestM && (
+              <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--color-evolt-muted)' }}>
+                  Última medição — {new Date(latestM.measured_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
+                </p>
+                <MeasurementRow label="Cintura" current={latestM.cintura_cm} previous={previousM?.cintura_cm ?? null} />
+                <MeasurementRow label="Quadril" current={latestM.quadril_cm} previous={previousM?.quadril_cm ?? null} />
+                <MeasurementRow label="Peito" current={latestM.peito_cm} previous={previousM?.peito_cm ?? null} />
+                <MeasurementRow label="Braço" current={latestM.braco_cm} previous={previousM?.braco_cm ?? null} />
+              </div>
+            )}
+
+            <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
+              <MeasurementsForm />
+            </div>
+
+            {allMeasurements.length > 1 && (
+              <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-evolt-surface)' }}>
+                <p className="text-xs font-semibold px-4 pt-4 pb-2" style={{ color: 'var(--color-evolt-muted)' }}>Histórico</p>
+                {allMeasurements.slice(0, 10).map((m, i) => (
+                  <div
+                    key={m.id}
+                    className="px-4 py-3 text-sm"
+                    style={{ borderTop: i > 0 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+                  >
+                    <p className="text-xs mb-1" style={{ color: 'var(--color-evolt-muted)' }}>
+                      {new Date(m.measured_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                      {m.cintura_cm != null && <span className="text-white">Cin: <strong>{Number(m.cintura_cm).toFixed(1)}</strong></span>}
+                      {m.quadril_cm != null && <span className="text-white">Qua: <strong>{Number(m.quadril_cm).toFixed(1)}</strong></span>}
+                      {m.peito_cm != null && <span className="text-white">Pei: <strong>{Number(m.peito_cm).toFixed(1)}</strong></span>}
+                      {m.braco_cm != null && <span className="text-white">Bra: <strong>{Number(m.braco_cm).toFixed(1)}</strong></span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {allMeasurements.length === 0 && (
+              <div className="rounded-2xl p-6 text-center" style={{ background: 'var(--color-evolt-surface)' }}>
+                <p className="text-sm" style={{ color: 'var(--color-evolt-muted)' }}>
+                  Nenhuma medida ainda. Registre a primeira acima!
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {tab === 'fotos' && (
           <div className="flex flex-col gap-4 px-4">
-            {/* Before/after */}
             {hasBeforeAfter && (
               <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
                 <p className="text-xs font-semibold mb-3" style={{ color: 'var(--color-evolt-muted)' }}>Antes e depois</p>
@@ -232,13 +320,11 @@ export default async function EvolucaoPage({
               </div>
             )}
 
-            {/* Add photo */}
             <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
               <p className="text-xs font-semibold mb-3" style={{ color: 'var(--color-evolt-muted)' }}>Adicionar foto</p>
               <PhotoUpload />
             </div>
 
-            {/* All photos grid */}
             {allPhotos.length > 0 && (
               <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
                 <p className="text-xs font-semibold mb-3" style={{ color: 'var(--color-evolt-muted)' }}>

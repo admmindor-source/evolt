@@ -48,6 +48,11 @@ const RECS_BY_PROFILE: Record<ProfileType, InitialRec[]> = {
     { sku: 'MULT01', reason_text: 'Micronutrientes que apoiam o relaxamento e o descanso noturno', priority: 1 },
     { sku: 'OMEG01', reason_text: 'Bem-estar geral que contribui para noites mais tranquilas', priority: 2 },
   ],
+  'suporte-articular': [
+    { sku: 'JOIN01', reason_text: 'Suporte direto para articulações, tendões e ligamentos', priority: 1 },
+    { sku: 'OMEG01', reason_text: 'Ácidos graxos anti-inflamatórios para reduzir o desconforto articular', priority: 2 },
+    { sku: 'MULT01', reason_text: 'Vitaminas e minerais essenciais para a saúde das articulações', priority: 3 },
+  ],
 };
 
 export function getInitialRecommendations(

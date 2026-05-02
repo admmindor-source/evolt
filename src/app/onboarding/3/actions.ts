@@ -38,7 +38,7 @@ export async function step3Action(
   }
 
   const profileType = classifyProfile({
-    goal: profile.goal as 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono',
+    goal: profile.goal as 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono' | 'performance' | 'definicao_muscular' | 'suporte_articular',
     training_level: profile.training_level as 'iniciante' | 'intermediario' | 'avancado',
     days_per_week: profile.days_per_week ?? 3,
     age: profile.age,

@@ -9,8 +9,11 @@ export const dynamic = 'force-dynamic';
 const GOAL_LABELS: Record<string, string> = {
   emagrecimento: 'Emagrecimento',
   hipertrofia: 'Ganho de massa',
-  saude_geral: 'Saúde geral',
+  performance: 'Performance',
+  definicao_muscular: 'Definição muscular',
+  saude_geral: 'Saúde e bem-estar',
   qualidade_sono: 'Qualidade do sono',
+  suporte_articular: 'Suporte articular',
 };
 
 const SKU_NAMES: Record<string, string> = {
@@ -43,7 +46,11 @@ export default async function PerfilPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login?next=/perfil');
 
-  const [{ data: profile }, { data: activation }, { data: weightLogs }] = await Promise.all([
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toLocaleDateString('sv-SE');
+
+  const [{ data: profile }, { data: activation }, { data: weightLogs }, { data: checklistDays }] = await Promise.all([
     supabase
       .from('user_profiles')
       .select('full_name, goal, weight_kg, height_cm, profile_type, onboarding_completed')
@@ -62,6 +69,11 @@ export default async function PerfilPage() {
       .eq('user_id', user.id)
       .order('measured_at', { ascending: false })
       .limit(1),
+    supabase
+      .from('checklist_completions')
+      .select('date')
+      .eq('user_id', user.id)
+      .gte('date', thirtyDaysAgoStr),
   ]);
 
   if (!profile?.onboarding_completed) redirect('/onboarding/1');
@@ -75,6 +87,9 @@ export default async function PerfilPage() {
     .toUpperCase();
 
   const currentWeight = weightLogs?.[0] ? Number(weightLogs[0].weight_kg) : null;
+
+  const uniqueActiveDays = new Set((checklistDays ?? []).map((r) => r.date)).size;
+  const progressPct = Math.min(100, Math.round((uniqueActiveDays / 30) * 100));
 
   return (
     <div className="flex flex-col min-h-dvh pb-24">
@@ -106,6 +121,30 @@ export default async function PerfilPage() {
                 </span>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="px-4 mb-3">
+          <div className="rounded-2xl p-4" style={{ background: 'var(--color-evolt-surface)' }}>
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-xs font-semibold" style={{ color: 'var(--color-evolt-muted)' }}>Seu progresso (30 dias)</p>
+              <p className="text-xs font-bold" style={{ color: progressPct >= 80 ? '#4ade80' : 'var(--color-evolt-orange)' }}>
+                {progressPct}%
+              </p>
+            </div>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${progressPct}%`,
+                  background: progressPct >= 80 ? '#4ade80' : 'var(--color-evolt-orange)',
+                }}
+              />
+            </div>
+            <p className="text-xs mt-1.5" style={{ color: 'var(--color-evolt-muted)' }}>
+              {uniqueActiveDays} dia{uniqueActiveDays !== 1 ? 's' : ''} ativos nos últimos 30 dias
+            </p>
           </div>
         </div>
 

@@ -93,6 +93,104 @@ export async function deletePhotoAction(photoId: string, storagePath: string): P
   revalidatePath('/evolucao');
 }
 
+const LogHydrationSchema = z.object({
+  ml_added: z.coerce.number().int().min(50).max(2000),
+  log_date: z.string().optional(),
+});
+
+export type LogHydrationState =
+  | { ok: true }
+  | { ok: false; errors: Record<string, string[] | undefined> };
+
+export async function logHydrationAction(
+  _prev: LogHydrationState | null,
+  formData: FormData,
+): Promise<LogHydrationState> {
+  const parsed = LogHydrationSchema.safeParse({
+    ml_added: formData.get('ml_added'),
+    log_date: formData.get('log_date') || undefined,
+  });
+
+  if (!parsed.success) {
+    return { ok: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, errors: { _form: ['Não autenticado.'] } };
+
+  const { error } = await supabase.from('hydration_logs').insert({
+    user_id: user.id,
+    ml_added: parsed.data.ml_added,
+    log_date: parsed.data.log_date ?? new Date().toLocaleDateString('sv-SE'),
+  });
+
+  if (error) {
+    return { ok: false, errors: { _form: ['Erro ao salvar. Tente novamente.'] } };
+  }
+
+  revalidatePath('/rotina');
+  return { ok: true };
+}
+
+export async function deleteHydrationLogAction(logId: string): Promise<void> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from('hydration_logs').delete().eq('id', logId).eq('user_id', user.id);
+  revalidatePath('/rotina');
+}
+
+const LogBodyMeasurementsSchema = z.object({
+  measured_at: z.string().optional(),
+  cintura_cm: z.coerce.number().min(30).max(300).optional(),
+  quadril_cm: z.coerce.number().min(30).max(300).optional(),
+  peito_cm: z.coerce.number().min(30).max(300).optional(),
+  braco_cm: z.coerce.number().min(10).max(100).optional(),
+});
+
+export type LogMeasurementsState =
+  | { ok: true }
+  | { ok: false; errors: Record<string, string[] | undefined> };
+
+export async function logBodyMeasurementsAction(
+  _prev: LogMeasurementsState | null,
+  formData: FormData,
+): Promise<LogMeasurementsState> {
+  const parsed = LogBodyMeasurementsSchema.safeParse({
+    measured_at: formData.get('measured_at') || undefined,
+    cintura_cm: formData.get('cintura_cm') || undefined,
+    quadril_cm: formData.get('quadril_cm') || undefined,
+    peito_cm: formData.get('peito_cm') || undefined,
+    braco_cm: formData.get('braco_cm') || undefined,
+  });
+
+  if (!parsed.success) {
+    return { ok: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, errors: { _form: ['Não autenticado.'] } };
+
+  const { error } = await supabase.from('body_measurements').insert({
+    user_id: user.id,
+    measured_at: parsed.data.measured_at ?? new Date().toLocaleDateString('sv-SE'),
+    cintura_cm: parsed.data.cintura_cm ?? null,
+    quadril_cm: parsed.data.quadril_cm ?? null,
+    peito_cm: parsed.data.peito_cm ?? null,
+    braco_cm: parsed.data.braco_cm ?? null,
+  });
+
+  if (error) {
+    return { ok: false, errors: { _form: ['Erro ao salvar. Tente novamente.'] } };
+  }
+
+  revalidatePath('/evolucao');
+  return { ok: true };
+}
+
 export async function recordRecommendationClickedAction(
   sku: string,
   context: Record<string, string>,

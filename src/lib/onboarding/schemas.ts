@@ -8,7 +8,7 @@ export const Step1Schema = z.object({
 });
 
 export const Step2Schema = z.object({
-  goal: z.enum(['emagrecimento', 'hipertrofia', 'saude_geral', 'qualidade_sono']),
+  goal: z.enum(['emagrecimento', 'hipertrofia', 'saude_geral', 'qualidade_sono', 'performance', 'definicao_muscular', 'suporte_articular']),
   training_level: z.enum(['iniciante', 'intermediario', 'avancado']),
   days_per_week: z.coerce.number().int().min(1).max(7),
   minutes_per_day: z.coerce.number().int().min(15).max(240),
@@ -20,7 +20,7 @@ export const Step3Schema = z.object({
 
 export const UpdateProfileSchema = z.object({
   weight_kg: z.coerce.number().min(30).max(400).optional(),
-  goal: z.enum(['emagrecimento', 'hipertrofia', 'saude_geral', 'qualidade_sono']).optional(),
+  goal: z.enum(['emagrecimento', 'hipertrofia', 'saude_geral', 'qualidade_sono', 'performance', 'definicao_muscular', 'suporte_articular']).optional(),
 });
 
 export type Step1Input = z.infer<typeof Step1Schema>;

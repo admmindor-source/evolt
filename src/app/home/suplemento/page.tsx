@@ -55,7 +55,7 @@ export default async function SuplementoDetailPage() {
           <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-evolt-muted)' }}>Suplementação</p>
           <h1 className="text-2xl font-bold text-white">{detail.name}</h1>
           <div className="flex items-center gap-2 mt-1">
-            <p className="text-sm" style={{ color: 'var(--color-evolt-muted)' }}>Pós-treino • 1 dose (30g)</p>
+            <p className="text-sm" style={{ color: 'var(--color-evolt-muted)' }}>{detail.timing}</p>
             {isConcluido && (
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
                 Concluído ✓

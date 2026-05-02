@@ -24,6 +24,7 @@ export type WorkoutDetail = {
 
 export type SupplementDetail = {
   name: string;
+  timing: string;
   howToUse: string;
   benefits: string;
   tip: string;
@@ -33,40 +34,59 @@ export type SupplementDetail = {
 export const SUPPLEMENT_DETAILS: Record<string, SupplementDetail> = {
   WHEY01: {
     name: 'Proteína Whey',
+    timing: 'Pós-treino • 1 scoop (30g)',
     howToUse: 'Misture 1 scoop (30g) com 200ml de água ou leite. Consuma preferencialmente após o treino.',
     benefits: 'Apoia a recuperação muscular, fornece aminoácidos essenciais e auxilia no ganho de massa magra.',
     tip: 'Consuma dentro de 30 minutos após o treino para melhor absorção.',
   },
   CREA01: {
     name: 'Creatina',
+    timing: 'Qualquer horário • 5g por dia',
     howToUse: 'Tome 5g por dia dissolvidos em água, suco ou misturados ao seu shake. Pode ser tomada a qualquer momento do dia.',
     benefits: 'Aumenta a força, potência e resistência muscular. Um dos suplementos mais estudados da ciência do esporte.',
     tip: 'A consistência diária é mais importante do que o horário. Tome todos os dias, mesmo nos dias sem treino.',
   },
   MULT01: {
     name: 'Multivitamínico',
+    timing: 'Café da manhã • 1 cápsula',
     howToUse: 'Tome 1 cápsula pela manhã, preferencialmente com a primeira refeição do dia.',
     benefits: 'Garante a cobertura de micronutrientes essenciais, apoia a imunidade e contribui para o bem-estar geral.',
     tip: 'Tome com comida para melhorar a absorção das vitaminas lipossolúveis (A, D, E, K).',
   },
   OMEG01: {
     name: 'Ômega 3',
+    timing: 'Com refeições • 2 cápsulas',
     howToUse: 'Tome 2 cápsulas ao dia, preferencialmente com as refeições. Pode dividir: 1 no almoço e 1 no jantar.',
     benefits: 'Apoia a saúde cardiovascular, reduz inflamação, melhora a recuperação muscular e contribui para o bem-estar geral.',
     tip: 'Guarde na geladeira após abrir para preservar a qualidade dos ácidos graxos.',
   },
   PRET01: {
     name: 'Pré-treino',
+    timing: 'Pré-treino • 30 min antes (10g)',
     howToUse: 'Tome 1 dose (10g) dissolvida em 200ml de água, 20 a 30 minutos antes do treino.',
     benefits: 'Aumenta o foco, a energia e o desempenho durante o treino. Retarda a fadiga em sessões intensas.',
     tip: 'Evite tomar após as 17h se você é sensível à cafeína. Comece com meia dose para avaliar sua tolerância.',
   },
   JOIN01: {
     name: 'Colágeno Articular',
+    timing: 'Em jejum • 1 dose diária',
     howToUse: 'Tome 1 dose diária dissolvida em água ou suco, de preferência em jejum ou junto com vitamina C.',
     benefits: 'Apoia a saúde das articulações, tendões e ligamentos, reduzindo o desconforto em treinos de alta intensidade.',
     tip: 'A vitamina C potencializa a síntese de colágeno. Tome com suco de laranja ou limão.',
   },
+};
+
+// --- Hydration goal in liters per profile type ---
+const HYDRATION_GOAL_LITERS: Record<ProfileType, number> = {
+  'iniciante-emagrecimento': 2.5,
+  'intermediario-emagrecimento': 3,
+  'avancado-emagrecimento': 3.5,
+  'iniciante-hipertrofia': 2.5,
+  'intermediario-hipertrofia': 3,
+  'avancado-hipertrofia': 3.5,
+  'saude-geral': 2,
+  'qualidade-sono': 2,
+  'suporte-articular': 2.5,
 };
 
 // --- Daily routine blocks by profile type ---
@@ -118,6 +138,12 @@ const DAILY_BLOCKS: Record<ProfileType, DailyBlock[]> = {
     { category: 'workout', title: 'Atividade física', description: '30 min de atividade leve. Evite exercícios intensos nas últimas 3h antes de dormir.' },
     { category: 'nutrition', title: 'Alimentação de hoje', description: 'Evite cafeína após as 14h. Jantar leve e de fácil digestão.' },
     { category: 'hydration', title: 'Meta de hidratação', description: 'Beba 2 litros de água durante o dia. Reduza a ingestão nas últimas 2h antes de dormir.' },
+  ],
+  'suporte-articular': [
+    { category: 'supplement', title: 'Suplemento do dia', description: 'Tome seu suplemento em jejum para melhor absorção do colágeno.' },
+    { category: 'workout', title: 'Treino articular', description: '30–45 min com foco em mobilidade, amplitude de movimento e baixo impacto.' },
+    { category: 'nutrition', title: 'Alimentação de hoje', description: 'Priorize alimentos anti-inflamatórios: salmão, cúrcuma, gengibre, frutas vermelhas.' },
+    { category: 'hydration', title: 'Meta de hidratação', description: 'Beba pelo menos 2,5 litros de água ao longo do dia.' },
   ],
 };
 
@@ -216,6 +242,18 @@ const WORKOUT_DETAILS: Record<ProfileType, WorkoutDetail> = {
       { name: 'Yoga/mobilidade', sets: 1, reps: '10 min', rest: '—' },
     ],
   },
+  'suporte-articular': {
+    title: 'Treino — Suporte Articular',
+    duration: '30–45 min',
+    focus: 'Mobilidade e fortalecimento articular',
+    exercises: [
+      { name: 'Mobilidade de quadril', sets: 2, reps: '10 cada lado', rest: '30s' },
+      { name: 'Agachamento com apoio', sets: 3, reps: '12–15', rest: '60s' },
+      { name: 'Rotação de ombro com elástico', sets: 3, reps: '15', rest: '45s' },
+      { name: 'Ponte glútea', sets: 3, reps: '15', rest: '45s' },
+      { name: 'Alongamento global', sets: 1, reps: '10 min', rest: '—' },
+    ],
+  },
 };
 
 export function getDailyBlocks(profileType: ProfileType): DailyBlock[] {
@@ -229,10 +267,15 @@ export function getWorkoutDetail(profileType: ProfileType): WorkoutDetail {
 export function getSupplementDetail(sku: string): SupplementDetail {
   return SUPPLEMENT_DETAILS[sku] ?? {
     name: sku,
+    timing: 'Conforme embalagem',
     howToUse: 'Siga as instruções da embalagem do produto.',
     benefits: 'Consulte o rótulo do produto para informações completas.',
     tip: 'Mantenha a regularidade para melhores resultados.',
   };
+}
+
+export function getHydrationGoalLiters(profileType: ProfileType): number {
+  return HYDRATION_GOAL_LITERS[profileType] ?? 2;
 }
 
 export function getDayNumber(activatedAt: string): number {

@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { step2Action, type Step2State } from './actions';
 
 type DefaultValues = {
-  goal?: 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono';
+  goal?: 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono' | 'performance' | 'definicao_muscular' | 'suporte_articular';
   training_level?: 'iniciante' | 'intermediario' | 'avancado';
   days_per_week?: number;
   minutes_per_day?: number;
@@ -47,8 +47,11 @@ export function Step2Form({ defaultValues }: { defaultValues: DefaultValues }) {
             <option value="" disabled>Selecione...</option>
             <option value="emagrecimento">Emagrecimento</option>
             <option value="hipertrofia">Ganho de massa</option>
-            <option value="saude_geral">Saúde geral</option>
+            <option value="performance">Performance</option>
+            <option value="definicao_muscular">Definição muscular</option>
+            <option value="saude_geral">Saúde e bem-estar</option>
             <option value="qualidade_sono">Qualidade do sono</option>
+            <option value="suporte_articular">Suporte articular</option>
           </select>
           {fieldError(state, 'goal') && (
             <p className="text-sm text-red-400">{fieldError(state, 'goal')}</p>

@@ -13,6 +13,7 @@ export default async function AdminUsersPage({
     .select(`
       user_id,
       full_name,
+      whatsapp,
       goal,
       profile_type,
       onboarding_completed,
@@ -46,11 +47,33 @@ export default async function AdminUsersPage({
     return true;
   });
 
+  const userIds = filteredProfiles.map((p) => p.user_id);
+
+  let lastSeenMap: Record<string, string> = {};
+  if (userIds.length > 0) {
+    const { data: events } = await supabase
+      .from('engagement_events')
+      .select('user_id, created_at')
+      .in('user_id', userIds)
+      .order('created_at', { ascending: false });
+
+    if (events) {
+      for (const ev of events) {
+        if (!lastSeenMap[ev.user_id]) {
+          lastSeenMap[ev.user_id] = ev.created_at;
+        }
+      }
+    }
+  }
+
   const GOAL_LABELS: Record<string, string> = {
     emagrecimento: 'Emagrecimento',
     hipertrofia: 'Hipertrofia',
-    saude_geral: 'Saúde geral',
+    performance: 'Performance',
+    definicao_muscular: 'Definição muscular',
+    saude_geral: 'Saúde e bem-estar',
     qualidade_sono: 'Qualidade do sono',
+    suporte_articular: 'Suporte articular',
   };
 
   const SKU_OPTIONS = ['WHEY01', 'CREA01', 'MULT01', 'OMEG01', 'PRET01', 'JOIN01'];
@@ -114,10 +137,12 @@ export default async function AdminUsersPage({
           <thead>
             <tr className="text-left text-[color:var(--color-evolt-muted)] text-xs uppercase tracking-wide border-b border-white/10">
               <th className="pb-2 pr-4">Nome</th>
+              <th className="pb-2 pr-4">WhatsApp</th>
               <th className="pb-2 pr-4">Objetivo</th>
               <th className="pb-2 pr-4">Perfil</th>
               <th className="pb-2 pr-4">SKU</th>
               <th className="pb-2 pr-4">Ativado em</th>
+              <th className="pb-2 pr-4">Último acesso</th>
               <th className="pb-2">Onboarding</th>
             </tr>
           </thead>
@@ -125,9 +150,13 @@ export default async function AdminUsersPage({
             {filteredProfiles.map((p) => {
               const activations = (p.product_activations as Array<{ sku: string; activated_at: string }>) ?? [];
               const activation = activations[0];
+              const lastSeen = lastSeenMap[p.user_id];
               return (
                 <tr key={p.user_id} className="border-b border-white/5 py-2">
                   <td className="py-2 pr-4 font-medium text-white">{p.full_name}</td>
+                  <td className="py-2 pr-4 text-[color:var(--color-evolt-muted)]">
+                    {p.whatsapp || '—'}
+                  </td>
                   <td className="py-2 pr-4 text-[color:var(--color-evolt-muted)]">
                     {p.goal ? (GOAL_LABELS[p.goal] ?? p.goal) : '—'}
                   </td>
@@ -144,6 +173,11 @@ export default async function AdminUsersPage({
                   <td className="py-2 pr-4 text-[color:var(--color-evolt-muted)]">
                     {activation?.activated_at
                       ? new Date(activation.activated_at).toLocaleDateString('pt-BR')
+                      : '—'}
+                  </td>
+                  <td className="py-2 pr-4 text-[color:var(--color-evolt-muted)]">
+                    {lastSeen
+                      ? new Date(lastSeen).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
                       : '—'}
                   </td>
                   <td className="py-2">

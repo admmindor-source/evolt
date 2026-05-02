@@ -2,24 +2,25 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { BottomNav } from '@/components/nav/BottomNav';
 import { ChecklistItem } from '@/app/home/checklist';
-import { getDailyBlocks, getWorkoutDetail, getSupplementDetail } from '@/lib/routine/templates';
+import { getDailyBlocks, getWorkoutDetail, getSupplementDetail, getHydrationGoalLiters } from '@/lib/routine/templates';
 import type { ProfileType } from '@/lib/onboarding/classify-profile';
+import { HydrationTracker } from './hydration-tracker';
 
 export const dynamic = 'force-dynamic';
 
 function todayDateString(): string {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toLocaleDateString('sv-SE');
 }
 
 function todayLabel(): string {
   return new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 }
 
-const CATEGORY_SUBTITLES: Record<string, (sku: string, workout: string) => string> = {
-  supplement: (sku) => `${sku || 'Seu suplemento'} • 1 dose`,
+const CATEGORY_SUBTITLES: Record<string, (timing: string, workout: string) => string> = {
+  supplement: (timing) => timing,
   workout: (_, workout) => workout,
   nutrition: () => 'Refeições equilibradas',
-  hydration: () => 'Meta: 2 litros',
+  hydration: () => '',
 };
 
 const DAY_TIPS = [
@@ -37,7 +38,7 @@ export default async function RotinaPage() {
 
   const todayDate = todayDateString();
 
-  const [{ data: profile }, { data: activation }, { data: completions }] = await Promise.all([
+  const [{ data: profile }, { data: activation }, { data: completions }, { data: hydrationLogs }] = await Promise.all([
     supabase
       .from('user_profiles')
       .select('profile_type, onboarding_completed')
@@ -55,6 +56,11 @@ export default async function RotinaPage() {
       .select('category')
       .eq('user_id', user.id)
       .eq('date', todayDate),
+    supabase
+      .from('hydration_logs')
+      .select('ml_added')
+      .eq('user_id', user.id)
+      .eq('log_date', todayDate),
   ]);
 
   if (!profile?.onboarding_completed) redirect('/onboarding/1');
@@ -65,7 +71,6 @@ export default async function RotinaPage() {
   const completedCategories = new Set((completions ?? []).map((c) => c.category));
   const workout = getWorkoutDetail(profileType);
   const supplementDetail = getSupplementDetail(activation?.sku ?? '');
-  const sku = activation?.sku ?? '';
 
   const today = todayLabel();
   const [weekday, ...rest] = today.split(', ');
@@ -74,6 +79,9 @@ export default async function RotinaPage() {
 
   const completedCount = completedCategories.size;
   const total = blocks.length;
+
+  const totalHydrationMl = (hydrationLogs ?? []).reduce((sum, l) => sum + (l.ml_added ?? 0), 0);
+  const hydrationGoalLiters = getHydrationGoalLiters(profileType);
 
   return (
     <div className="flex flex-col min-h-dvh pb-24">
@@ -104,12 +112,12 @@ export default async function RotinaPage() {
           </div>
         </div>
 
-        {/* Checklist */}
+        {/* Checklist (sem hydration — tem tracker separado abaixo) */}
         <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-evolt-surface)' }}>
-          {blocks.map((block, i) => {
+          {blocks.filter((b) => b.category !== 'hydration').map((block, i) => {
             const subtitleFn = CATEGORY_SUBTITLES[block.category];
             const subtitle = subtitleFn
-              ? subtitleFn(block.category === 'supplement' ? (supplementDetail.name || sku) : sku, workout.title)
+              ? subtitleFn(block.category === 'supplement' ? supplementDetail.timing : '', workout.title)
               : block.description;
 
             return (
@@ -125,6 +133,13 @@ export default async function RotinaPage() {
             );
           })}
         </div>
+
+        {/* Hydration tracker */}
+        <HydrationTracker
+          goalLiters={hydrationGoalLiters}
+          totalMl={totalHydrationMl}
+          todayDate={todayDate}
+        />
 
         {/* Dica do dia */}
         <div className="rounded-2xl p-4" style={{ background: 'rgba(255,120,20,0.08)', border: '1px solid rgba(255,120,20,0.2)' }}>

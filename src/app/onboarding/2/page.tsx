@@ -31,7 +31,7 @@ export default async function OnboardingStep2Page() {
       </div>
       <Step2Form
         defaultValues={{
-          goal: (profile?.goal as 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono' | undefined) ?? undefined,
+          goal: (profile?.goal as 'emagrecimento' | 'hipertrofia' | 'saude_geral' | 'qualidade_sono' | 'performance' | 'definicao_muscular' | 'suporte_articular' | undefined) ?? undefined,
           training_level: (profile?.training_level as 'iniciante' | 'intermediario' | 'avancado' | undefined) ?? undefined,
           days_per_week: profile?.days_per_week ?? undefined,
           minutes_per_day: profile?.minutes_per_day ?? undefined,
