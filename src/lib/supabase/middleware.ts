@@ -71,8 +71,8 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
       }
 
-      // auth+completed trying to access /onboarding/* → redirect to /home
-      if (completed && pathname.startsWith('/onboarding')) {
+      // auth+completed trying to access /onboarding/* (except conclusao) → redirect to /home
+      if (completed && pathname.startsWith('/onboarding') && !pathname.startsWith('/onboarding/conclusao')) {
         const url = request.nextUrl.clone();
         url.pathname = '/home';
         return NextResponse.redirect(url);

@@ -49,5 +49,5 @@ export async function signupAction(
     await materializeActivation(data.user.id);
   }
 
-  redirect('/onboarding');
+  redirect('/onboarding/1');
 }
