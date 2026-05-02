@@ -1,3 +1,4 @@
+Initialising login role...
 export type Json =
   | string
   | number
@@ -633,26 +634,77 @@ export type Database = {
           },
         ]
       }
-      user_profiles: {
+      user_initial_recs: {
         Row: {
           created_at: string
-          full_name: string
-          updated_at: string
+          recs: Json
           user_id: string
-          whatsapp: string
         }
         Insert: {
           created_at?: string
-          full_name: string
-          updated_at?: string
+          recs?: Json
           user_id: string
-          whatsapp: string
         }
         Update: {
           created_at?: string
+          recs?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          age: number | null
+          created_at: string
+          current_supplements: string[] | null
+          days_per_week: number | null
+          full_name: string
+          goal: string | null
+          height_cm: number | null
+          minutes_per_day: number | null
+          onboarding_completed: boolean
+          profile_type: string | null
+          sex: string | null
+          training_level: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+          whatsapp: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          current_supplements?: string[] | null
+          days_per_week?: number | null
+          full_name: string
+          goal?: string | null
+          height_cm?: number | null
+          minutes_per_day?: number | null
+          onboarding_completed?: boolean
+          profile_type?: string | null
+          sex?: string | null
+          training_level?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+          whatsapp: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          current_supplements?: string[] | null
+          days_per_week?: number | null
           full_name?: string
+          goal?: string | null
+          height_cm?: number | null
+          minutes_per_day?: number | null
+          onboarding_completed?: boolean
+          profile_type?: string | null
+          sex?: string | null
+          training_level?: string | null
           updated_at?: string
           user_id?: string
+          weight_kg?: number | null
           whatsapp?: string
         }
         Relationships: []
@@ -1139,3 +1191,4 @@ export const Constants = {
     },
   },
 } as const
+<claude-code-hint v="1" type="plugin" value="supabase@claude-plugins-official" />
