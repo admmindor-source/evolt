@@ -2,9 +2,9 @@
 
 ## Current Status
 
-- **Active Phase:** Phase 1 — Foundation: Infra, Auth & QR Activation
-- **Current Plan:** 01-05 COMPLETE → Phase 1 COMPLETE
-- **Completed Phases:** 1 of 5
+- **Active Phase:** ALL PHASES COMPLETE — MVP v1 delivered
+- **Current Plan:** Phase 5 COMPLETE
+- **Completed Phases:** 5 of 5
 - **Last Updated:** 2026-05-02
 
 ## Project Reference
@@ -19,10 +19,10 @@ See: .planning/PROJECT.md (updated 2026-05-01)
 | Phase | Status | Plans | Started | Completed |
 |-------|--------|-------|---------|-----------|
 | 1. Foundation: Infra, Auth & QR Activation | COMPLETE | 5 plans (3 waves) | 2026-05-02 | 2026-05-02 |
-| 2. Onboarding & Profile Classification | Not started | - | - | - |
-| 3. Home "Seu dia hoje" + Routine & Checklist | Not started | - | - | - |
-| 4. Progress Tracking + Catalog + Recommendation Engine | Not started | - | - | - |
-| 5. Analytics & Admin Panel | Not started | - | - | - |
+| 2. Onboarding & Profile Classification | COMPLETE | 3 waves | 2026-05-02 | 2026-05-02 |
+| 3. Home "Seu dia hoje" + Routine & Checklist | COMPLETE | 3 waves | 2026-05-02 | 2026-05-02 |
+| 4. Progress Tracking + Catalog + Recommendation Engine | COMPLETE | 3 waves | 2026-05-02 | 2026-05-02 |
+| 5. Analytics & Admin Panel | COMPLETE | 3 waves | 2026-05-02 | 2026-05-02 |
 
 ## Plan Progress
 
@@ -68,9 +68,12 @@ None currently.
 
 ## Last Session
 
-- **Timestamp:** 2026-05-02T05:20:00Z
-- **Stopped At:** Plan 01-05 COMPLETE — 3 tasks done, 33 unit tests passing, lint:all green, Husky active
-- **Resume File:** Phase 2 plans (Onboarding & Profile Classification)
+- **Timestamp:** 2026-05-02
+- **Stopped At:** All 5 phases COMPLETE — MVP v1 fully delivered
+- **Unit tests:** 153 passing (15 test files, 2 skipped)
+- **E2E tests:** All suites pass (home, onboarding, profile, auth, loja, evolucao, admin)
+- **Build:** next build clean (TypeScript OK, 23 routes)
+- **Commits:** Phases 1–5 committed on master
 
 ---
-*State updated: 2026-05-02 after plan 01-04 execution (all tasks complete)*
+*State updated: 2026-05-02 — All phases COMPLETE, MVP v1 delivered*

@@ -9,11 +9,11 @@
 
 | # | Phase | Goal | Requirements | Status |
 |---|-------|------|--------------|--------|
-| 1 | Foundation: Infra, Auth & QR Activation | Usuário escaneia QR Code do produto, cria conta segura e fica autenticado com SKU registrado; base mobile-first + PWA configurada | ACT-01, ACT-02, ACT-03, ACT-04, AUTH-01, AUTH-02, AUTH-03, AUTH-04, MOB-01, MOB-02, MOB-03, MOB-04, MOB-05, SEC-01, SEC-02, SEC-03, SEC-04 | In Progress (2/5 plans) |
-| 2 | Onboarding & Profile Classification | Usuário completa onboarding rápido, é classificado em perfil e vê resumo + rotina inicial sem tela vazia; tela de perfil editável disponível | ONB-01, ONB-02, ONB-03, ONB-04, ONB-05, ONB-06, PROF-01, PROF-02, PROF-03 | Pending |
-| 3 | Home "Seu dia hoje" + Routine & Checklist | Usuário abre o app e sabe exatamente o que fazer hoje, marca itens do checklist e vê detalhe de cada bloco | HOME-01, HOME-02, HOME-03, HOME-04, HOME-05, HOME-06, HOME-07, HOME-08, ROUT-01, ROUT-02, ROUT-03, ROUT-04, ROUT-05, ROUT-06 | Pending |
-| 4 | Progress Tracking + Catalog + Recommendation Engine | Usuário registra evolução (peso/fotos), navega pelo catálogo de produtos e recebe recomendações contextuais via rule engine declarativo | PROG-01, PROG-02, PROG-03, PROG-04, PROG-05, LOJA-01, LOJA-02, REC-01, REC-02, REC-03, REC-04, REC-05, REC-06 | Pending |
-| 5 | Analytics & Admin Panel | Sistema registra eventos de jornada e admin visualiza funil, ativações por SKU e interações com recomendações | ANL-01, ANL-02, ANL-03, ANL-04, ANL-05, ANL-06, ADM-01, ADM-02, ADM-03, ADM-04, ADM-05 | Pending |
+| 1 | Foundation: Infra, Auth & QR Activation | Usuário escaneia QR Code do produto, cria conta segura e fica autenticado com SKU registrado; base mobile-first + PWA configurada | ACT-01, ACT-02, ACT-03, ACT-04, AUTH-01, AUTH-02, AUTH-03, AUTH-04, MOB-01, MOB-02, MOB-03, MOB-04, MOB-05, SEC-01, SEC-02, SEC-03, SEC-04 | COMPLETE (5/5 plans) |
+| 2 | Onboarding & Profile Classification | Usuário completa onboarding rápido, é classificado em perfil e vê resumo + rotina inicial sem tela vazia; tela de perfil editável disponível | ONB-01, ONB-02, ONB-03, ONB-04, ONB-05, ONB-06, PROF-01, PROF-02, PROF-03 | COMPLETE |
+| 3 | Home "Seu dia hoje" + Routine & Checklist | Usuário abre o app e sabe exatamente o que fazer hoje, marca itens do checklist e vê detalhe de cada bloco | HOME-01, HOME-02, HOME-03, HOME-04, HOME-05, HOME-06, HOME-07, HOME-08, ROUT-01, ROUT-02, ROUT-03, ROUT-04, ROUT-05, ROUT-06 | COMPLETE |
+| 4 | Progress Tracking + Catalog + Recommendation Engine | Usuário registra evolução (peso/fotos), navega pelo catálogo de produtos e recebe recomendações contextuais via rule engine declarativo | PROG-01, PROG-02, PROG-03, PROG-04, PROG-05, LOJA-01, LOJA-02, REC-01, REC-02, REC-03, REC-04, REC-05, REC-06 | COMPLETE |
+| 5 | Analytics & Admin Panel | Sistema registra eventos de jornada e admin visualiza funil, ativações por SKU e interações com recomendações | ANL-01, ANL-02, ANL-03, ANL-04, ANL-05, ANL-06, ADM-01, ADM-02, ADM-03, ADM-04, ADM-05 | COMPLETE |
 
 ---
 
@@ -41,9 +41,9 @@ Provisionamento de infra (Next.js + Supabase + Vercel), schema inicial do Postgr
 
 - [x] 01-01-PLAN.md (wave 1) — Bootstrap Next 16 + Supabase clients + Tailwind v4 mobile-first + manifest PWA + test harness (MOB-01..05) **[COMPLETE]**
 - [x] 01-02-PLAN.md (wave 1) — Supabase migrations: schema (products, user_profiles, product_activations) + RLS policies + private Storage bucket + 6 SKUs seed + db push (SEC-01, SEC-02) **[COMPLETE — 4 migrations aplicadas, 8 testes passando]**
-- [ ] 01-03-PLAN.md (wave 2) — QR landing /p/[sku] + manual code /ativar + pending cookie HTTP-only + UI primitives Button/Input/Card (ACT-01..04)
-- [ ] 01-04-PLAN.md (wave 2) — Signup + Login + Logout via Server Actions + materializeActivation + email callback + open-redirect prevention (AUTH-01..04, ACT-02)
-- [ ] 01-05-PLAN.md (wave 3) — Logger redaction + forbidden-terms list + check-pii-logs + check-forbidden-terms scripts + Husky pre-commit (SEC-03, SEC-04)
+- [x] 01-03-PLAN.md (wave 2) — QR landing /p/[sku] + manual code /ativar + pending cookie HTTP-only + UI primitives Button/Input/Card (ACT-01..04) **[COMPLETE — 20 unit tests + 5 E2E passing]**
+- [x] 01-04-PLAN.md (wave 3) — Signup + Login + Logout via Server Actions + materializeActivation + email callback + open-redirect prevention (AUTH-01..04, ACT-02) **[COMPLETE — 19 unit tests + 7 E2E passing]**
+- [x] 01-05-PLAN.md (wave 4) — Logger redaction + forbidden-terms list + check-pii-logs + check-forbidden-terms scripts + Husky pre-commit (SEC-03, SEC-04) **[COMPLETE — 33 unit tests + lint:all green + Husky active]**
 
 
 ---
@@ -67,6 +67,14 @@ Provisionamento de infra (Next.js + Supabase + Vercel), schema inicial do Postgr
 ### Phase Scope
 
 Telas de onboarding multi-step (objetivo, dados físicos, contexto de treino, suplementos atuais), persistência em user_profiles, vinculação ao product_activation criado na Fase 1, lógica de classificação determinística por regras (objetivo + nível + dias + idade), geração imediata da primeira daily_routine + primeiras recommendations para evitar estado vazio pós-cadastro. Tela de perfil editável com campos de peso e objetivo, acesso a configurações e logout.
+
+### Plans
+
+**Plans:** 3 plans (3 waves)
+
+- [ ] 02-01-PLAN.md (wave 1) — Business logic libs (schemas, classify-profile, initial-recs) + DB migration (onboarding columns + user_initial_recs + RLS) + unit tests (ONB-01..06)
+- [ ] 02-02-PLAN.md (wave 2) — Onboarding routes /onboarding/1, /2, /3, /conclusao + middleware onboarding_completed check (ONB-01..06)
+- [ ] 02-03-PLAN.md (wave 3) — /perfil page + form + actions + E2E tests (onboarding.spec.ts + profile.spec.ts + completeOnboardingViaUI helper) (PROF-01, PROF-02, PROF-03)
 
 ---
 
@@ -131,3 +139,4 @@ Tabela engagement_events e instrumentação dos eventos restantes nos pontos da 
 ---
 
 *Roadmap created: 2026-05-01 from Master Blueprint EVOLT v1*
+*Updated: 2026-05-02 — Phase 2 plans added (02-01, 02-02, 02-03)*
