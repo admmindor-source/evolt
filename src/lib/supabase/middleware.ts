@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { env } from '@/lib/validation/env';
 
-const PROTECTED_PATHS = ['/onboarding', '/home', '/perfil', '/evolucao', '/loja', '/admin'];
+const PROTECTED_PATHS = ['/onboarding', '/home', '/rotina', '/perfil', '/evolucao', '/loja', '/admin'];
 const AUTH_PATHS = ['/login', '/signup'];
 
 export async function updateSession(request: NextRequest) {
@@ -52,6 +52,7 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     const needsOnboardingCheck =
       pathname.startsWith('/home') ||
+      pathname.startsWith('/rotina') ||
       pathname.startsWith('/perfil') ||
       pathname.startsWith('/onboarding');
 
