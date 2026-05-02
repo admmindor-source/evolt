@@ -413,6 +413,30 @@ export type Database = {
           },
         ]
       }
+      checklist_completions: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          category: string
+          completed_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          category: string
+          completed_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          category?: string
+          completed_at?: string
+        }
+        Relationships: []
+      }
       product_activations: {
         Row: {
           activated_at: string

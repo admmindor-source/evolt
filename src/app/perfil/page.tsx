@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/Card';
+import { BottomNav } from '@/components/nav/BottomNav';
 import { PerfilForm } from './form';
 
 export const dynamic = 'force-dynamic';
@@ -36,7 +37,8 @@ export default async function PerfilPage() {
   if (!profile?.onboarding_completed) redirect('/onboarding/1');
 
   return (
-    <main className="flex min-h-dvh flex-col px-6 py-8 max-w-lg mx-auto gap-6">
+    <div className="flex flex-col min-h-dvh pb-20">
+    <main className="flex flex-col px-6 py-8 max-w-lg mx-auto gap-6 w-full">
       <div>
         <p className="text-xs text-[color:var(--color-evolt-muted)] uppercase tracking-widest mb-1">EVOLT</p>
         <h1 className="text-2xl font-semibold">Meu perfil</h1>
@@ -99,5 +101,7 @@ export default async function PerfilPage() {
         </form>
       </section>
     </main>
+    <BottomNav />
+    </div>
   );
 }
