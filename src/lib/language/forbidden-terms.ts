@@ -51,4 +51,4 @@ export const FORBIDDEN_TERMS_WHITELIST: readonly string[] = [
   'scripts/check-forbidden-terms.mjs',
   'tests/unit/forbidden-terms-list.test.ts',
   'tests/unit/lint-scripts.test.ts',
-];
+] as const;

@@ -17,7 +17,8 @@
     "lint:all": "npm run lint && npm run lint:hover-rules && npm run lint:pii && npm run lint:forbidden-terms",
     "db:push": "supabase db push",
     "db:reset": "supabase db reset --linked",
-    "test:integration": "dotenv -e .env.local -- vitest run tests/unit/rls-policies.test.ts tests/unit/storage-bucket-policy.test.ts --reporter=dot"
+    "test:integration": "dotenv -e .env.local -- vitest run tests/unit/rls-policies.test.ts tests/unit/storage-bucket-policy.test.ts --reporter=dot",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
     "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "serwist": "^9.5.10",
     "supabase": "^2.98.0",

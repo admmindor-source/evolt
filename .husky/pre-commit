@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+echo "[pre-commit] running PII log check..."
+npm run -s lint:pii || exit 1
+
+echo "[pre-commit] running forbidden terms check..."
+npm run -s lint:forbidden-terms || exit 1
+
+echo "[pre-commit] running hover-rules check..."
+npm run -s lint:hover-rules || exit 1
+
+echo "[pre-commit] OK"
