@@ -8,7 +8,11 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const skipReason = !url || !anonKey ? 'NEXT_PUBLIC_SUPABASE_URL/ANON_KEY not set — run with `npx dotenv -e .env.local -- npx vitest`' : null;
 
 describe.skipIf(skipReason)('RLS policies (SEC-01)', () => {
-  const anon = createClient<Database>(url!, anonKey!);
+  let anon: ReturnType<typeof createClient<Database>>;
+
+  beforeAll(() => {
+    anon = createClient<Database>(url!, anonKey!);
+  });
 
   it('anon role cannot read user_profiles (RLS deny)', async () => {
     const { data, error } = await anon.from('user_profiles').select('user_id').limit(1);
